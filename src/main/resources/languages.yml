@@ -28,6 +28,7 @@ outOfStock: "This shop does not have it in stock. Please wait until it's refille
 fullStock: "This shop is full and cannot be sell anymore. Please wait until the stock is low or contact %player%!"
 adminShopOpenChest: "The Admin Shop does not need to be replenished with items."
 notFoundEmerald: "We were unable to purchase the emeralds because we did not have any in stock. Please wait until the stock is low or contact %player%!"
+shopNoInventory: "I couldn't buy it because the shop is full. Please wait until the stock is low or contact %player%!"
 
 
 #
