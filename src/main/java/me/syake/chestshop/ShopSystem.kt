@@ -193,11 +193,26 @@ class ShopSystem(private val main: ChestShop) {
         val amount = main.shops.config().getInt("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.amount")
         val buyPrice = main.shops.config().getInt("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.price")
         item?.amount = 1
-        if(blockState.getLine(0)=="§c§lAdmin SHOP") {
-            dropItem(event.player, item!!, amount)
-            return
-        }
         val emerald = ItemStack(Material.EMERALD)
+        if(blockState.getLine(0)=="§c§lAdmin SHOP") {
+            if(main.economy) {
+                if(!(main.econ!!.has(Bukkit.getOfflinePlayer(event.player.uniqueId) ,buyPrice.toDouble()))) {
+                    event.player.sendMessage(main.lang.toMessage("balanceInsufficient", "Your balance is insufficient."))
+                    return
+                }
+                main.econ!!.withdrawPlayer(Bukkit.getOfflinePlayer(event.player.uniqueId), buyPrice.toDouble())
+                dropItem(event.player, item!!, amount)
+            } else {
+                if(hasItem(event.player.inventory, emerald, buyPrice)) {
+                    delItemInventory(event.player.inventory, emerald, buyPrice)
+                    dropItem(event.player, item!!, amount)
+                    chest.update()
+                } else {
+                    event.player.sendMessage(main.lang.toMessage("emeraldInsufficient", "Your emerald is insufficient."))
+                    return
+                }
+            }
+        }
         if(main.economy) {
             if(!(main.econ!!.has(Bukkit.getOfflinePlayer(event.player.uniqueId) ,buyPrice.toDouble()))) {
                 event.player.sendMessage(main.lang.toMessage("balanceInsufficient", "Your balance is insufficient."))
