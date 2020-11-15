@@ -1,0 +1,41 @@
+prefix: "§7[§6SHOP§7]"
+NotFoundVault: "&cIt's currently set to economy mode in the config, but it couldn't start up properly because it couldn't find the Vault. If you plan to use emeralds as your currency, please try emerald mode."
+
+
+#
+# Message
+#
+BalanceInsufficient: "Your balance is insufficient."
+CreateShop: "Created a shop!"
+DeleteShop: "Deleted a shop!"
+BuyPriceNumberOnly: "Please note that the buy price must be entered as a number"
+SellPriceNumberOnly: "Please note that the sell price must be entered as a number"
+ItemAmountNumberOnly: "Please note that the item amount must be entered as a number"
+MinItemAmount: "The number of items must be at least 1."
+MinBuyPrice: "The buy price should be set at 1 or more."
+MinSellPrice: "The sell price should be set at 0 or more."
+NotSetPrice: "To create a shop, you'll need to set a price for a sell or buy, or both!"
+NotSetItem: "To create a shop you need to hold the item you want to sell in your hand and right click on the sign"
+ChestTop: "Can't create a shop because there is a block on one of the chests"
+SignNeedFront: "The sign needs to be place on the front of the chest!"
+DeleteIsOwnerOnly: "The shop can only be destroyed by the player owner!"
+NotEnoughCost: "The shop creation cost is not enough."
+sellOnly: "This shop is for sell only."
+buyOnly: "This shop is for buy only."
+balanceInsufficient: "Your balance is insufficient."
+emeraldInsufficient: "Your emerald is insufficient."
+outOfStock: "This shop does not have it in stock. Please wait until it's refilled or contact us at %player%."
+fullStock: "This shop is full and cannot be sell anymore. Please wait until the stock is low or contact %player%!"
+adminShopOpenChest: "The Admin Shop does not need to be replenished with items."
+notFoundEmerald: "We were unable to purchase the emeralds because we did not have any in stock. Please wait until the stock is low or contact %player%!"
+
+
+#
+# Sign And Chest
+# Warning: If you change this item after creating a chest shop,
+#  the shop will not be available in a shop that has already been created.
+#
+Shop: "&eShop"
+SignShop: "&eShop"
+Buy: "B"
+Sell: "S"

@@ -1,0 +1,9 @@
+# emerald: When set to emerald, the currency is set to emerald.
+# economy: When set to economy, it will be synchronized with the economy plugin. Vault is required.
+mode: "emerald"
+
+# The cost of creating a shop. (Int)
+creationCost: 0
+
+# Taxes will be charged on the buy or sell of the property. % designation. (Int)
+tax: 0

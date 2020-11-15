@@ -1,0 +1,9 @@
+name: ChestShop
+version: ${project.version}
+main: me.syake.chestshop.ChestShop
+api-version: 1.16
+authors: [ syake ]
+description: Create a great shop with chests!
+permissions:
+  chestshop.adminshop:
+    default: op
