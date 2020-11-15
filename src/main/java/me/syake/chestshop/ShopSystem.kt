@@ -110,7 +110,6 @@ class ShopSystem(private val main: ChestShop) {
             return false
         }
         amount = amo
-        Bukkit.broadcastMessage(amo.toString())
         for(i in items) {
             if(i.amount==i.maxStackSize) {
                 continue
@@ -210,10 +209,16 @@ class ShopSystem(private val main: ChestShop) {
         } else {
             if(hasInventoryArea(chest.inventory, emerald, buyPrice)) {
                 if(hasItem(chest.inventory, item!!, amount)) {
-                    delItemInventory(chest.snapshotInventory, item, amount)
-                    addItemInventory(chest.snapshotInventory, emerald, buyPrice)
-                    dropItem(event.player, item, amount)
-                    chest.update()
+                    if(hasItem(event.player.inventory, emerald, buyPrice)) {
+                        delItemInventory(chest.snapshotInventory, item, amount)
+                        delItemInventory(event.player.inventory, emerald, buyPrice)
+                        addItemInventory(chest.snapshotInventory, emerald, buyPrice)
+                        dropItem(event.player, item, amount)
+                        chest.update()
+                    } else {
+                        event.player.sendMessage(main.lang.toMessage("emeraldInsufficient", "Your emerald is insufficient."))
+                        return
+                    }
                 } else {
                     event.player.sendMessage(main.lang.toMessage("outOfStock", "This shop does not have it in stock. Please wait until it's refilled or contact us at %player%.").replace("%player%", Bukkit.getOfflinePlayer(UUID.fromString(owner)).name!!))
                     return
