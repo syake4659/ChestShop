@@ -1,42 +1,36 @@
-prefix: "§7[§6SHOP§7]"
-NotFoundVault: "&cIt's currently set to economy mode in the config, but it couldn't start up properly because it couldn't find the Vault. If you plan to use emeralds as your currency, please try emerald mode."
+prefix: "&7[&6SHOP&7]&f "
+NotFoundVault: "&cI'm currently set to \"Economy\" mode in the config, but I couldn't find a vault or an economy plugin to support the vault and couldn't start it correctly. If you do not plan to install economy plugin, please change to \"Emerald\" mode"
 
 
 #
 # Message
 #
 BalanceInsufficient: "Your balance is insufficient."
+baughtItem: "You just bought &a%item%&f for &6%price%&f!"
+sellItem: "You sold &a%item%&f items for &6%price%&f!"
 CreateShop: "Created a shop!"
 DeleteShop: "Deleted a shop!"
-BuyPriceNumberOnly: "Please note that the buy price must be entered as a number"
+BoughtPriceNumberOnly: "Please note that the bought price must be entered as a number"
 SellPriceNumberOnly: "Please note that the sell price must be entered as a number"
 ItemAmountNumberOnly: "Please note that the item amount must be entered as a number"
 MinItemAmount: "The number of items must be at least 1."
-MinBuyPrice: "The buy price should be set at 1 or more."
+MinBoughtPrice: "The bought price should be set at 1 or more."
 MinSellPrice: "The sell price should be set at 0 or more."
-NotSetPrice: "To create a shop, you'll need to set a price for a sell or buy, or both!"
+NotSetPrice: "To create a shop, you'll need to set a price for a sell or bought, or both!"
 NotSetItem: "To create a shop you need to hold the item you want to sell in your hand and right click on the sign"
 ChestTop: "Can't create a shop because there is a block on one of the chests"
 SignNeedFront: "The sign needs to be place on the front of the chest!"
 DeleteIsOwnerOnly: "The shop can only be destroyed by the player owner!"
 NotEnoughCost: "The shop creation cost is not enough."
 sellOnly: "This shop is for sell only."
-buyOnly: "This shop is for buy only."
+boughtOnly: "This shop is for bought only."
 balanceInsufficient: "Your balance is insufficient."
 emeraldInsufficient: "Your emerald is insufficient."
-outOfStock: "This shop does not have it in stock. Please wait until it's refilled or contact us at %player%."
-fullStock: "This shop is full and cannot be sell anymore. Please wait until the stock is low or contact %player%!"
+outOfStock: "This shop does not have it in stock. Please wait until it's refilled or contact us at &a%player%&f."
+fullStock: "This shop is full and cannot be sell anymore. Please wait until the stock is low or contact &a%player%&f!"
 adminShopOpenChest: "The Admin Shop does not need to be replenished with items."
-notFoundEmerald: "We were unable to purchase the emeralds because we did not have any in stock. Please wait until the stock is low or contact %player%!"
-shopNoInventory: "I couldn't buy it because the shop is full. Please wait until the stock is low or contact %player%!"
-
-
-#
-# Sign And Chest
-# Warning: If you change this item after creating a chest shop,
-#  the shop will not be available in a shop that has already been created.
-#
-Shop: "&eShop"
-SignShop: "&eShop"
-Buy: "B"
-Sell: "S"
+notFoundEmerald: "Can't sell items because there are no emeralds in the shop. Please wait until the stock is low or contact &a%player%&f!"
+shopNoInventorySell: "I couldn't sell it because the shop is full. Please wait until the stock is low or contact &a%player%&f!"
+shopNoInventoryBought: "I couldn't bought it because the shop is full. Please wait until the stock is low or contact &a%player%&f!"
+notEnoughItem: "Not enough items to sell."
+notEnoughMoneyOwner: "The shop owner does not have enough money to sell."

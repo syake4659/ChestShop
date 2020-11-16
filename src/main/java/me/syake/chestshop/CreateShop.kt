@@ -61,10 +61,10 @@ class CreateShop(private val main: ChestShop): Listener {
                     -1
                 }
             }
-            val buyPrice = blockState.getLine(2).toIntOrNull().run {
+            val boughtPrice = blockState.getLine(2).toIntOrNull().run {
                 if(this!=null) {
                     if(this<1) {
-                        event.player.sendMessage(main.lang.toMessage("MinBuyPrice", "The buy price should be set at 1 or more."))
+                        event.player.sendMessage(main.lang.toMessage("MinBoughtPrice", "The bought price should be set at 1 or more."))
                         return
                     }
                     this
@@ -72,8 +72,8 @@ class CreateShop(private val main: ChestShop): Listener {
                     -1
                 }
             }
-            if(buyPrice==-1&&sellPrice==-1) {
-                event.player.sendMessage(main.lang.toMessage("NotSetPrice", "To create a shop, you'll need to set a price for a sell or buy, or both!"))
+            if(boughtPrice==-1&&sellPrice==-1) {
+                event.player.sendMessage(main.lang.toMessage("NotSetPrice", "To create a shop, you'll need to set a price for a sell or bought, or both!"))
                 return
             }
             if(event.player.inventory.itemInMainHand.type == Material.AIR) {
@@ -144,10 +144,10 @@ class CreateShop(private val main: ChestShop): Listener {
                 ticksLived = Integer.MAX_VALUE
             }
             main.shops.config().set("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.item", item)
-            main.shops.config().set("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.price", buyPrice)
+            main.shops.config().set("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.price", boughtPrice)
             main.shops.config().set("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.sellPrice", sellPrice)
             main.shops.config().set("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.amount", itemAmount)
-            main.shops.config().set("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.buy", buyPrice >= 0)
+            main.shops.config().set("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.bought", boughtPrice >= 0)
             main.shops.config().set("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.sell", sellPrice >= 0)
             main.shops.config().set("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.admin", admin)
             main.shops.config().set("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.owner", event.player.uniqueId.toString())
@@ -156,10 +156,10 @@ class CreateShop(private val main: ChestShop): Listener {
             main.shops.saveConfig()
             blockState.setLine(1, if (item.itemMeta!!.hasDisplayName()) "${item.itemMeta!!.displayName} ×${itemAmount}" else "${item.type.name} ×${itemAmount}")
             blockState.setLine(0, if(admin) "§c§lAdmin SHOP" else "§e§lSHOP")
-            if (buyPrice >= 0) {
-                blockState.setLine(2, "B: §r${buyPrice}")
+            if (boughtPrice >= 0) {
+                blockState.setLine(2, "B: §r${boughtPrice}")
                 if (sellPrice >= 0) {
-                    blockState.setLine(2, "B §r${buyPrice} : §r${sellPrice} S")
+                    blockState.setLine(2, "B §r${boughtPrice} : §r${sellPrice} S")
                 }
             } else {
                 blockState.setLine(2, "S §r${sellPrice}")
@@ -172,6 +172,6 @@ class CreateShop(private val main: ChestShop): Listener {
         }
     }
     private fun Config.toMessage(pass: String, default: String = "", prefix: Boolean = true):String {
-        return ChatColor.translateAlternateColorCodes('&', (if(prefix) "${main.lang.config().getString("prefix", "&7[&6SHOP&7]&r")} " else "") + this.config().getString(pass, default))
+        return ChatColor.translateAlternateColorCodes('&', (if(prefix) "${main.lang.config().getString("prefix", "&7[&6SHOP&7]&f ")}" else "") + this.config().getString(pass, default))
     }
 }

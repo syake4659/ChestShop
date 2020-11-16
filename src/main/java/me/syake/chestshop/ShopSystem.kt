@@ -4,6 +4,7 @@ import me.syake.realfishing.Config
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Chest
@@ -110,7 +111,6 @@ class ShopSystem(private val main: ChestShop) {
             return false
         }
         amount = amo
-        Bukkit.broadcastMessage(amo.toString())
         for(i in items) {
             if(i.amount==i.maxStackSize) {
                 continue
@@ -179,7 +179,7 @@ class ShopSystem(private val main: ChestShop) {
             else -> {
             }
         }
-        if(!main.shops.config().getBoolean("${chest!!.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.buy")) {
+        if(!main.shops.config().getBoolean("${chest!!.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.bought")) {
             event.player.sendMessage(main.lang.toMessage("sellOnly", "This shop is for sell only."))
             return
         }
@@ -188,30 +188,36 @@ class ShopSystem(private val main: ChestShop) {
         }
         val owner = main.shops.config().getString("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.owner")
         if(event.player.uniqueId.toString() == owner) {
-            TODO("今後作成します。")
+            main.managementPanel.open(event.player, chest)
+            return
         }
         val item = main.shops.config().getItemStack("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.item")
         val amount = main.shops.config().getInt("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.amount")
-        val buyPrice = main.shops.config().getInt("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.price")
+        val boughtPrice = main.shops.config().getInt("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.price")
         item?.amount = 1
         if(blockState.getLine(0)=="§c§lAdmin SHOP") {
+            event.player.playSound(event.player.location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F)
             dropItem(event.player, item!!, amount)
             return
         }
         val emerald = ItemStack(Material.EMERALD)
         if(main.economy) {
-            if(!(main.econ!!.has(Bukkit.getOfflinePlayer(event.player.uniqueId) ,buyPrice.toDouble()))) {
+            if(!(main.econ!!.has(Bukkit.getOfflinePlayer(event.player.uniqueId) ,boughtPrice.toDouble()))) {
                 event.player.sendMessage(main.lang.toMessage("balanceInsufficient", "Your balance is insufficient."))
                 return
             }
-            main.econ!!.withdrawPlayer(Bukkit.getOfflinePlayer(event.player.uniqueId), buyPrice.toDouble())
-            main.econ!!.depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(owner)), (buyPrice.toDouble()/100)*(100-main.config.getInt("tax", 0)))
-            dropItem(event.player, item!!, amount)
+            event.player.sendMessage(main.lang.toMessage("baughtItem", "You just bought %item% for %price%!").replace("%item%", "${item!!.type.name} x$amount").replace("%price%", main.econ!!.format(boughtPrice.toDouble())))
+            main.econ!!.withdrawPlayer(Bukkit.getOfflinePlayer(event.player.uniqueId), boughtPrice.toDouble())
+            main.econ!!.depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(owner)), (boughtPrice.toDouble()/100)*(100-main.config.getInt("tax", 0)))
+            dropItem(event.player, item, amount)
         } else {
-            if(hasInventoryArea(chest.inventory, emerald, buyPrice)) {
+            if(hasInventoryArea(chest.inventory, emerald, boughtPrice)) {
                 if(hasItem(chest.inventory, item!!, amount)) {
+                    event.player.sendMessage(main.lang.toMessage("baughtItem", "You just bought %item% for %price%!").replace("%item%", "${item.type.name} x$amount").replace("%price%", "$boughtPrice Emerald"))
+                    event.player.playSound(event.player.location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F)
                     delItemInventory(chest.snapshotInventory, item, amount)
-                    addItemInventory(chest.snapshotInventory, emerald, buyPrice)
+                    addItemInventory(chest.snapshotInventory, emerald, boughtPrice)
+                    delItemInventory(event.player.inventory, emerald, boughtPrice)
                     dropItem(event.player, item, amount)
                     chest.update()
                 } else {
@@ -219,14 +225,92 @@ class ShopSystem(private val main: ChestShop) {
                     return
                 }
             } else {
-                event.player.sendMessage(main.lang.toMessage("shopNoInventory", "I couldn't buy it because the shop is full. Please wait until the stock is low or contact %player%!").replace("%player%", Bukkit.getOfflinePlayer(UUID.fromString(owner)).name!!))
+                event.player.sendMessage(main.lang.toMessage("shopNoInventoryBought", "I couldn't bought it because the shop is full. Please wait until the stock is low or contact %player%!").replace("%player%", Bukkit.getOfflinePlayer(UUID.fromString(owner)).name!!))
                 return
             }
         }
     }
     fun onSignLeftClick(event: PlayerInteractEvent, block: Block, blockState: Sign, data: WallSign) {
+        if(!(blockState.getLine(0)=="§e§lSHOP"||blockState.getLine(0)=="§c§lAdmin SHOP")) {
+            return
+        }
+        var chest: Chest? = null
+        when(data.facing) {
+            BlockFace.EAST -> {
+                chest = block.location.add(-1.0, 0.0, 0.0).block.state as Chest
+            }
+            BlockFace.SOUTH -> {
+                chest = block.location.add(0.0, 0.0, -1.0).block.state as Chest
+            }
+            BlockFace.WEST -> {
+                chest = block.location.add(1.0, 0.0, 0.0).block.state as Chest
+            }
+            BlockFace.NORTH -> {
+                chest = block.location.add(0.0, 0.0, 1.0).block.state as Chest
+            }
+            else -> {
+            }
+        }
+        if(!main.shops.config().getBoolean("${chest!!.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.sell")) {
+            event.player.sendMessage(main.lang.toMessage("sellOnly", "This shop is for sell only."))
+            return
+        }
+        if(!(main.shops.config().contains("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}"))) {
+            return
+        }
+        val owner = main.shops.config().getString("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.owner")
+        if(event.player.uniqueId.toString() == owner) {
+            return
+        }
+        val item = main.shops.config().getItemStack("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.item")
+        val amount = main.shops.config().getInt("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.amount")
+        val sellPrice = main.shops.config().getInt("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.sellPrice")
+        item?.amount = 1
+        val emerald = ItemStack(Material.EMERALD)
+        if(blockState.getLine(0)=="§c§lAdmin SHOP") {
+            if(delItemInventory(event.player.inventory, item!!, amount)) {
+                event.player.playSound(event.player.location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F)
+                dropItem(event.player, emerald, sellPrice)
+            } else {
+                event.player.sendMessage(main.lang.toMessage("notEnoughItem", "Not enough items to sell."))
+            }
+            return
+        }
+        if(main.economy) {
+            if(!hasItem(event.player.inventory, item!!, amount)) {
+                event.player.sendMessage(main.lang.toMessage("notEnoughItem", "Not enough items to sell."))
+                return
+            }
+            if(!(main.econ!!.has(Bukkit.getOfflinePlayer(UUID.fromString(owner)) ,sellPrice.toDouble()))) {
+                event.player.sendMessage(main.lang.toMessage("notEnoughMoneyOwner", "The shop owner does not have enough money to sell."))
+                return
+            }
+            event.player.playSound(event.player.location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F)
+            event.player.sendMessage(main.lang.toMessage("sellItem", "You sold %item% items for %price%!").replace("%item%", "${item.type.name} x$amount").replace("%price%", main.econ!!.format(sellPrice.toDouble())))
+            delItemInventory(event.player.inventory, item, amount)
+            main.econ!!.depositPlayer(Bukkit.getOfflinePlayer(event.player.uniqueId), sellPrice.toDouble())
+            main.econ!!.withdrawPlayer(Bukkit.getOfflinePlayer(UUID.fromString(owner)), (sellPrice.toDouble()/100)*(100-main.config.getInt("tax", 0)))
+        } else {
+            if(hasItem(chest.inventory, emerald, sellPrice)) {
+                if(hasInventoryArea(chest.inventory, item!!, amount)) {
+                    event.player.playSound(event.player.location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F)
+                    event.player.sendMessage(main.lang.toMessage("sellItem", "You sold %item% items for %price%!").replace("%item%", "${item.type.name} x$amount").replace("%price%", "${sellPrice} Emerald"))
+                    delItemInventory(event.player.inventory, item, amount)
+                    delItemInventory(chest.snapshotInventory, emerald, sellPrice)
+                    addItemInventory(chest.snapshotInventory, item, amount)
+                    dropItem(event.player, emerald, sellPrice)
+                    chest.update()
+                } else {
+                    event.player.sendMessage(main.lang.toMessage("shopNoInventorySell", "I couldn't sell it because the shop is full. Please wait until the stock is low or contact %player%!").replace("%player%", Bukkit.getOfflinePlayer(UUID.fromString(owner)).name!!))
+                    return
+                }
+            } else {
+                event.player.sendMessage(main.lang.toMessage("notFoundEmerald", "Can't sell items because there are no emeralds in the shop. Please wait until the stock is low or contact %player%!").replace("%player%", Bukkit.getOfflinePlayer(UUID.fromString(owner)).name!!))
+                return
+            }
+        }
     }
     private fun Config.toMessage(pass: String, default: String = "", prefix: Boolean = true):String {
-        return ChatColor.translateAlternateColorCodes('&', (if(prefix) "${main.lang.config().getString("prefix", "&7[&6SHOP&7]&r")} " else "") + this.config().getString(pass, default))
+        return ChatColor.translateAlternateColorCodes('&', (if(prefix) "${main.lang.config().getString("prefix", "&7[&6SHOP&7]&f ")}" else "") + this.config().getString(pass, default))
     }
 }

@@ -5,5 +5,5 @@ mode: "emerald"
 # The cost of creating a shop. (Int)
 creationCost: 0
 
-# Taxes will be charged on the buy or sell of the property. % designation. (Int)
+# Taxes will be charged on the bought or sell of the property. % designation. (Int)
 tax: 0

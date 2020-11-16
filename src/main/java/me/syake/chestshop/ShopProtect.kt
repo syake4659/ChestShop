@@ -200,6 +200,6 @@ class ShopProtect(private val main: ChestShop): Listener {
         }
     }
     private fun Config.toMessage(pass: String, default: String = "", prefix: Boolean = true):String {
-        return ChatColor.translateAlternateColorCodes('&', (if(prefix) "${main.lang.config().getString("prefix", "&7[&6SHOP&7]&r")} " else "") + this.config().getString(pass, default))
+        return ChatColor.translateAlternateColorCodes('&', (if(prefix) "${main.lang.config().getString("prefix", "&7[&6SHOP&7]&f ")}" else "") + this.config().getString(pass, default))
     }
 }
