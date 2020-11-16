@@ -1,6 +1,5 @@
 package me.syake.chestshop
 
-import me.syake.realfishing.Config
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -21,7 +20,6 @@ class ChestShop : JavaPlugin(), Listener {
     val shopSystem = ShopSystem(this)
     val withdrawItem = WithdrawItem()
     private val deleteShop = DeleteShop(this)
-    val managementPanel = ManagementPanel(this)
 
     override fun onEnable() {
         saveDefaultConfig()
@@ -29,6 +27,7 @@ class ChestShop : JavaPlugin(), Listener {
         shops.saveDefaultConfig()
         Bukkit.getPluginManager().registerEvents(interactEvent, this)
         Bukkit.getPluginManager().registerEvents(shopProtect, this)
+        Bukkit.getPluginManager().registerEvents(deleteShop, this)
         thread.start()
         if(config.getString("mode")=="economy") {
             if(setupEconomy()) {

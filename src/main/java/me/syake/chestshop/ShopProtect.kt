@@ -1,6 +1,5 @@
 package me.syake.chestshop
 
-import me.syake.realfishing.Config
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.block.BlockFace

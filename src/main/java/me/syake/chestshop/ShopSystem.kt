@@ -1,6 +1,5 @@
 package me.syake.chestshop
 
-import me.syake.realfishing.Config
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -17,7 +16,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.*
 
 class ShopSystem(private val main: ChestShop) {
-    fun delItemInventory(inv: Inventory, item: ItemStack, amo: Int):Boolean {
+    private fun delItemInventory(inv: Inventory, item: ItemStack, amo: Int):Boolean {
         item.amount = 1
         var amount = 0
         val items = mutableListOf<ItemStack>()
@@ -37,20 +36,24 @@ class ShopSystem(private val main: ChestShop) {
         }
         amount = amo
         for (i in items) {
-            if(i.amount==amount) {
-                i.amount = 0
-                return true
-            } else if(i.amount>amount) {
-                i.amount -= amount
-                return true
-            } else {
-                amount -= i.amount
-                i.amount = 0
+            when {
+                i.amount==amount -> {
+                    i.amount = 0
+                    return true
+                }
+                i.amount>amount -> {
+                    i.amount -= amount
+                    return true
+                }
+                else -> {
+                    amount -= i.amount
+                    i.amount = 0
+                }
             }
         }
         return false
     }
-    fun hasItem(inv: Inventory, item: ItemStack, amo: Int): Boolean {
+    private fun hasItem(inv: Inventory, item: ItemStack, amo: Int): Boolean {
         item.amount = 1
         var amount = 0
         val items = mutableListOf<ItemStack>()
@@ -70,7 +73,7 @@ class ShopSystem(private val main: ChestShop) {
         }
         return true
     }
-    fun hasInventoryArea(inv: Inventory, item: ItemStack, amo: Int): Boolean {
+    private fun hasInventoryArea(inv: Inventory, item: ItemStack, amo: Int): Boolean {
         item.amount = 1
         var amount = 0
         val items = mutableListOf<ItemStack>()
@@ -91,7 +94,7 @@ class ShopSystem(private val main: ChestShop) {
         }
         return true
     }
-    fun addItemInventory(inv: Inventory, item: ItemStack, amo: Int): Boolean {
+    private fun addItemInventory(inv: Inventory, item: ItemStack, amo: Int): Boolean {
         item.amount = 1
         var amount = 0
         val items = mutableListOf<ItemStack>()
@@ -115,34 +118,42 @@ class ShopSystem(private val main: ChestShop) {
             if(i.amount==i.maxStackSize) {
                 continue
             }
-            if(item.maxStackSize-i.amount==amount) {
-                i.amount = item.maxStackSize
-                return true
-            } else if(item.maxStackSize-i.amount>amount) {
-                i.amount+=amount
-                return true
-            } else {
-                amount-=i.amount
-                i.amount = item.maxStackSize
+            when {
+                item.maxStackSize-i.amount==amount -> {
+                    i.amount = item.maxStackSize
+                    return true
+                }
+                item.maxStackSize-i.amount>amount -> {
+                    i.amount+=amount
+                    return true
+                }
+                else -> {
+                    amount-=i.amount
+                    i.amount = item.maxStackSize
+                }
             }
         }
         while (true) {
-            if(amount==item.maxStackSize) {
-                item.amount = item.maxStackSize
-                inv.addItem(item)
-                return true
-            } else if(amount<item.maxStackSize) {
-                item.amount = amount
-                inv.addItem(item)
-                return true
-            } else {
-                item.amount = item.maxStackSize
-                inv.addItem(item)
-                amount -= item.maxStackSize
+            when {
+                amount==item.maxStackSize -> {
+                    item.amount = item.maxStackSize
+                    inv.addItem(item)
+                    return true
+                }
+                amount<item.maxStackSize -> {
+                    item.amount = amount
+                    inv.addItem(item)
+                    return true
+                }
+                else -> {
+                    item.amount = item.maxStackSize
+                    inv.addItem(item)
+                    amount -= item.maxStackSize
+                }
             }
         }
     }
-    fun dropItem(player: Player, item: ItemStack, amo: Int) {
+    private fun dropItem(player: Player, item: ItemStack, amo: Int) {
         var amount = amo
         while (true) {
             if (amount > item.maxStackSize) {
@@ -188,7 +199,6 @@ class ShopSystem(private val main: ChestShop) {
         }
         val owner = main.shops.config().getString("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.owner")
         if(event.player.uniqueId.toString() == owner) {
-            main.managementPanel.open(event.player, chest)
             return
         }
         val item = main.shops.config().getItemStack("${chest.location.world?.name}-${chest.location.blockX}-${chest.location.blockY}-${chest.location.blockZ}.item")
@@ -206,14 +216,14 @@ class ShopSystem(private val main: ChestShop) {
                 event.player.sendMessage(main.lang.toMessage("balanceInsufficient", "Your balance is insufficient."))
                 return
             }
-            event.player.sendMessage(main.lang.toMessage("baughtItem", "You just bought %item% for %price%!").replace("%item%", "${item!!.type.name} x$amount").replace("%price%", main.econ!!.format(boughtPrice.toDouble())))
+            event.player.sendMessage(main.lang.toMessage("boughtItem", "You just bought %item% for %price%!").replace("%item%", "${item!!.type.name} x$amount").replace("%price%", main.econ!!.format(boughtPrice.toDouble())))
             main.econ!!.withdrawPlayer(Bukkit.getOfflinePlayer(event.player.uniqueId), boughtPrice.toDouble())
             main.econ!!.depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(owner)), (boughtPrice.toDouble()/100)*(100-main.config.getInt("tax", 0)))
             dropItem(event.player, item, amount)
         } else {
             if(hasInventoryArea(chest.inventory, emerald, boughtPrice)) {
                 if(hasItem(chest.inventory, item!!, amount)) {
-                    event.player.sendMessage(main.lang.toMessage("baughtItem", "You just bought %item% for %price%!").replace("%item%", "${item.type.name} x$amount").replace("%price%", "$boughtPrice Emerald"))
+                    event.player.sendMessage(main.lang.toMessage("boughtItem", "You just bought %item% for %price%!").replace("%item%", "${item.type.name} x$amount").replace("%price%", "$boughtPrice Emerald"))
                     event.player.playSound(event.player.location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F)
                     delItemInventory(chest.snapshotInventory, item, amount)
                     addItemInventory(chest.snapshotInventory, emerald, boughtPrice)
@@ -294,7 +304,7 @@ class ShopSystem(private val main: ChestShop) {
             if(hasItem(chest.inventory, emerald, sellPrice)) {
                 if(hasInventoryArea(chest.inventory, item!!, amount)) {
                     event.player.playSound(event.player.location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F)
-                    event.player.sendMessage(main.lang.toMessage("sellItem", "You sold %item% items for %price%!").replace("%item%", "${item.type.name} x$amount").replace("%price%", "${sellPrice} Emerald"))
+                    event.player.sendMessage(main.lang.toMessage("sellItem", "You sold %item% items for %price%!").replace("%item%", "${item.type.name} x$amount").replace("%price%", "$sellPrice Emerald"))
                     delItemInventory(event.player.inventory, item, amount)
                     delItemInventory(chest.snapshotInventory, emerald, sellPrice)
                     addItemInventory(chest.snapshotInventory, item, amount)

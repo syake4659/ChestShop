@@ -1,4 +1,4 @@
-package me.syake.realfishing
+package me.syake.chestshop
 
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration

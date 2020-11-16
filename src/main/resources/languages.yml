@@ -6,7 +6,7 @@ NotFoundVault: "&cI'm currently set to \"Economy\" mode in the config, but I cou
 # Message
 #
 BalanceInsufficient: "Your balance is insufficient."
-baughtItem: "You just bought &a%item%&f for &6%price%&f!"
+boughtItem: "You just bought &a%item%&f for &6%price%&f!"
 sellItem: "You sold &a%item%&f items for &6%price%&f!"
 CreateShop: "Created a shop!"
 DeleteShop: "Deleted a shop!"
