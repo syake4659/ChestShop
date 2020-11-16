@@ -21,6 +21,7 @@ class ChestShop : JavaPlugin(), Listener {
     val shopSystem = ShopSystem(this)
     val withdrawItem = WithdrawItem()
     private val deleteShop = DeleteShop(this)
+    val managementPanel = ManagementPanel(this)
 
     override fun onEnable() {
         saveDefaultConfig()
@@ -28,13 +29,12 @@ class ChestShop : JavaPlugin(), Listener {
         shops.saveDefaultConfig()
         Bukkit.getPluginManager().registerEvents(interactEvent, this)
         Bukkit.getPluginManager().registerEvents(shopProtect, this)
-        Bukkit.getPluginManager().registerEvents(deleteShop, this)
         thread.start()
         if(config.getString("mode")=="economy") {
             if(setupEconomy()) {
                 economy = true
             } else {
-                server.consoleSender.sendMessage(ChatColor.translateAlternateColorCodes('&', lang.config().getString("NotFoundVault", "&cIt's currently set to economy mode in the config, but it couldn't start up properly because it couldn't find the Vault. If you plan to use emeralds as your currency, please try emerald mode.")!!))
+                server.consoleSender.sendMessage(lang.toMessage("NotFoundVault", "&cI'm currently set to \"Economy\" mode in the config, but I couldn't find a vault or an economy plugin to support the vault and couldn't start it correctly. If you do not plan to install economy plugin, please change to \"Emerald\" mode"))
                 server.pluginManager.disablePlugin(this)
                 return
             }
@@ -70,7 +70,6 @@ class ChestShop : JavaPlugin(), Listener {
         }, 0L, 36000L)
     }
 
-
     private fun setupEconomy(): Boolean {
         if (server.pluginManager.getPlugin("Vault") == null) {
             return false
@@ -80,8 +79,7 @@ class ChestShop : JavaPlugin(), Listener {
         return econ != null
     }
 
+    private fun Config.toMessage(pass: String, default: String = "", prefix: Boolean = true):String {
+        return ChatColor.translateAlternateColorCodes('&', (if (prefix) "${lang.config().getString("prefix", "&7[&6SHOP&7]&f ")}" else "") + this.config().getString(pass, default))
+    }
 }
-
-    //
-    // ここからチェスト保護
-    //
