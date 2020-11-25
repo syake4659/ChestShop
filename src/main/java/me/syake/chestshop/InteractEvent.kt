@@ -16,7 +16,7 @@ class InteractEvent(private val main: ChestShop): Listener {
             val block = event.clickedBlock?:return
             val blockState = block.state as Sign
             val data = blockState.blockData as WallSign
-            main.shopSystem.onSignLeftClick(event, block, blockState, data)
+            main.shopSystem.onSignLeftClick(event, block, data)
         }
     }
 }

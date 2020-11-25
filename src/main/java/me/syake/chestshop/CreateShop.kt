@@ -138,7 +138,8 @@ class CreateShop(private val main: ChestShop): Listener {
                 pickupDelay = Integer.MAX_VALUE
                 isCustomNameVisible = true
                 addScoreboardTag("ChestShopItemTag")
-                customName = if (item.itemMeta!!.hasDisplayName()) "${item.itemMeta!!.displayName} ×${itemAmount}" else "${item.type.name} ×${itemAmount}"
+                val itemName = main.lang.toMessage("itemName", "%name% x%amount%", false).replace("%amount%", itemAmount.toString())
+                customName = if (item.itemMeta!!.hasDisplayName()) itemName.replace("%name%", item.itemMeta!!.displayName) else itemName.replace("%name%", item.type.name)
                 isInvulnerable = true
                 ticksLived = Integer.MAX_VALUE
             }
@@ -154,19 +155,19 @@ class CreateShop(private val main: ChestShop): Listener {
             event.player.sendMessage(main.lang.toMessage("CreateShop", "Created a shop!"))
             main.shops.saveConfig()
             blockState.setLine(1, if (item.itemMeta!!.hasDisplayName()) "${item.itemMeta!!.displayName} ×${itemAmount}" else "${item.type.name} ×${itemAmount}")
-            blockState.setLine(0, if(admin) "§c§lAdmin SHOP" else "§e§lSHOP")
+            blockState.setLine(0, if(admin) main.lang.toMessage("adminshop", "§c§lAdmin SHOP", false) else main.lang.toMessage("shop", "§e§lSHOP", false))
             if (boughtPrice >= 0) {
-                blockState.setLine(2, "B: §r${boughtPrice}")
+                blockState.setLine(2, main.lang.toMessage("boughtShop", "B: &r%boughtprice%", false).replace("%boughtprice%", boughtPrice.toString()))
                 if (sellPrice >= 0) {
-                    blockState.setLine(2, "B §r${boughtPrice} : §r${sellPrice} S")
+                    blockState.setLine(2, main.lang.toMessage("bothshop", "B &r%boughtprice% : &r%sellprice% S", false).replace("%sellprice%", sellPrice.toString()).replace("%boughtprice%", boughtPrice.toString()))
                 }
             } else {
-                blockState.setLine(2, "S §r${sellPrice}")
+                blockState.setLine(2, main.lang.toMessage("sellShop", "S &r%sellprice%", false).replace("%sellprice%", sellPrice.toString()))
             }
-            blockState.setLine(3, if(admin) "§lAdminister" else "§l${event.player.name}")
+            blockState.setLine(3, if(admin) main.lang.toMessage("administer", "&lAdminister", false) else "§l${event.player.name}")
             blockState.update()
         } else {
-            main.shopSystem.onSignRightClick(event, block, blockState, data)
+            main.shopSystem.onSignRightClick(event, block, data)
             return
         }
     }

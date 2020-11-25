@@ -1,6 +1,8 @@
 prefix: "&7[&6SHOP&7]&f "
 NotFoundVault: "&cI'm currently set to \"Economy\" mode in the config, but I couldn't find a vault or an economy plugin to support the vault and couldn't start it correctly. If you do not plan to install economy plugin, please change to \"Emerald\" mode"
-
+help: "&6/chestshop reload&8: &7Reload the config file."
+reloadDone: "&6Reload is complete."
+start: "&6Chest Shop has started! Have a better trading life!"
 
 #
 # Message
@@ -34,3 +36,14 @@ shopNoInventorySell: "I couldn't sell it because the shop is full. Please wait u
 shopNoInventoryBought: "I couldn't bought it because the shop is full. Please wait until the stock is low or contact &a%player%&f!"
 notEnoughItem: "Not enough items to sell."
 notEnoughMoneyOwner: "The shop owner does not have enough money to sell."
+
+#
+# Sign
+#
+shop: "&e&lSHOP"
+adminshop: "&c&lAdmin SHOP"
+boughtShop: "B: &r%boughtprice%"
+sellShop: "S &r%sellprice%"
+bothshop: "B &r%boughtprice% : &r%sellprice% S"
+itemName: "%name% x%amount%"
+administer: "&lAdminister"

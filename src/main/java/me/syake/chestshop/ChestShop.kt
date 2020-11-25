@@ -3,6 +3,8 @@ package me.syake.chestshop
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.command.Command
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Item
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
@@ -22,6 +24,7 @@ class ChestShop : JavaPlugin(), Listener {
     private val deleteShop = DeleteShop(this)
 
     override fun onEnable() {
+        Metrics(this, 9440)
         saveDefaultConfig()
         lang.saveDefaultConfig()
         shops.saveDefaultConfig()
@@ -52,6 +55,54 @@ class ChestShop : JavaPlugin(), Listener {
 
     override fun onDisable() {
         // Plugin shutdown logic
+    }
+
+    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
+        if(command.name == "chestshop") {
+            if(args.isEmpty())  {
+                sender.sendMessage(lang.toMessage("help", "&6/chestshop reload&8: &7Reload the config file.", false))
+                return true
+            }
+            when(args[0]) {
+                "reload" -> {
+                    lang.saveConfig()
+                    saveConfig()
+                    shops.saveConfig()
+                    lang.reloadConfig()
+                    shops.reloadConfig()
+                    reloadConfig()
+                    if(config.getString("mode")=="economy") {
+                        if(setupEconomy()) {
+                            economy = true
+                        } else {
+                            server.consoleSender.sendMessage(lang.toMessage("NotFoundVault", "&cI'm currently set to \"Economy\" mode in the config, but I couldn't find a vault or an economy plugin to support the vault and couldn't start it correctly. If you do not plan to install economy plugin, please change to \"Emerald\" mode"))
+                            server.pluginManager.disablePlugin(this)
+                        }
+                    }
+                }
+                else -> sender.sendMessage(lang.toMessage("help", "&6/chestshop reload&8: &7Reload the config file.", false))
+            }
+        }
+        return true
+    }
+
+    override fun onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array<out String>): MutableList<String> {
+        val commands = mutableListOf("reload")
+        if(command.name == "chestshop") {
+            if(args.isEmpty())  {
+                return commands
+            }
+            if(args.size==1) {
+                val cmds = mutableListOf<String>()
+                for(cmd in commands) {
+                    if(args[0].startsWith(cmd)) {
+                        cmds.add(cmd)
+                    }
+                }
+                return cmds
+            }
+        }
+        return mutableListOf()
     }
 
     private val thread = Thread {
