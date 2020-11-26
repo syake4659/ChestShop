@@ -3,6 +3,7 @@ NotFoundVault: "&cI'm currently set to \"Economy\" mode in the config, but I cou
 help: "&6/chestshop reload&8: &7Reload the config file."
 reloadDone: "&6Reload is complete."
 start: "&6Chest Shop has started! Have a better trading life!"
+notFoundItem: "The currency was set to emerald because the item name　%name% was not found."
 
 #
 # Message

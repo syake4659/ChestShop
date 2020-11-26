@@ -3,10 +3,12 @@ package me.syake.chestshop
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Item
 import org.bukkit.event.Listener
+import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 
 
@@ -21,6 +23,7 @@ class ChestShop : JavaPlugin(), Listener {
     val createShop = CreateShop(this)
     val shopSystem = ShopSystem(this)
     val withdrawItem = WithdrawItem()
+    var currency = ItemStack(Material.EMERALD)
     private val deleteShop = DeleteShop(this)
 
     override fun onEnable() {
@@ -39,6 +42,13 @@ class ChestShop : JavaPlugin(), Listener {
                 server.consoleSender.sendMessage(lang.toMessage("NotFoundVault", "&cI'm currently set to \"Economy\" mode in the config, but I couldn't find a vault or an economy plugin to support the vault and couldn't start it correctly. If you do not plan to install economy plugin, please change to \"Emerald\" mode"))
                 server.pluginManager.disablePlugin(this)
                 return
+            }
+        } else {
+            val temp = Material.getMaterial(config.getString("currency")!!.toUpperCase())
+            if(temp!=null) {
+                currency = ItemStack(temp)
+            } else {
+                server.consoleSender.sendMessage(lang.toMessage("notFoundItem", "The currency was set to emerald because the item name　%name% was not found.").replace("%name%", config.getString("currency")!!))
             }
         }
         for (i in Bukkit.getWorlds()) {
@@ -77,6 +87,13 @@ class ChestShop : JavaPlugin(), Listener {
                         } else {
                             server.consoleSender.sendMessage(lang.toMessage("NotFoundVault", "&cI'm currently set to \"Economy\" mode in the config, but I couldn't find a vault or an economy plugin to support the vault and couldn't start it correctly. If you do not plan to install economy plugin, please change to \"Emerald\" mode"))
                             server.pluginManager.disablePlugin(this)
+                        }
+                    } else {
+                        val temp = Material.getMaterial(config.getString("currency")!!.toUpperCase())
+                        if(temp!=null) {
+                            currency = ItemStack(temp)
+                        } else {
+                            server.consoleSender.sendMessage(lang.toMessage("notFoundItem", "The currency was set to emerald because the item name　%name% was not found.").replace("%name%", config.getString("currency")!!))
                         }
                     }
                 }
