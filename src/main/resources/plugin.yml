@@ -8,5 +8,15 @@ load: STARTUP
 permissions:
   chestshop.adminshop:
     default: op
+  chestshop.reload:
+    default: op
+  chestshop.revenue.view:
+    default: op
+  chestshop.revenue.get:
+    default: op
 softdepend:
   - Vault
+commands:
+  chestshop:
+    aliases:
+      - cs

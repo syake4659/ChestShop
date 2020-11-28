@@ -6,7 +6,7 @@
 
     <groupId>me.syake</groupId>
     <artifactId>ChestShop</artifactId>
-    <version>3.4.9</version>
+    <version>3.5.9</version>
     <packaging>jar</packaging>
 
     <name>ChestShop</name>

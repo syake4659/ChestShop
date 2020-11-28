@@ -24,7 +24,7 @@ class DeleteShop(private val main: ChestShop): Listener {
             val admin = main.shops.config().getBoolean("${block.location.world?.name}-${block.location.blockX}-${block.location.blockY}-${block.location.blockZ}.admin")
             val owner = main.shops.config().getString("${block.location.world?.name}-${block.location.blockX}-${block.location.blockY}-${block.location.blockZ}.owner")
             if(admin) {
-                if(!event.player.hasPermission("chestshop.adminshop")) {
+                if(!event.player.hasPermission("chestshop.adminshop") || event.player.hasPermission("chestshop.delete")) {
                     event.player.sendMessage(main.lang.toMessage("DeleteIsOwnerOnly", "The shop can only be destroyed by the player owner!"))
                     event.isCancelled = true
                     return
@@ -80,7 +80,7 @@ class DeleteShop(private val main: ChestShop): Listener {
                     event.player.sendMessage(main.lang.toMessage("DeleteIsOwnerOnly", "The shop can only be destroyed by the player owner!"))
                     return
                 }
-            } else if (owner != event.player.uniqueId.toString() && event.player.hasPermission("chestshop.admin")) {
+            } else if (owner != event.player.uniqueId.toString() || event.player.hasPermission("chestshop.delete")) {
                 event.player.sendMessage(main.lang.toMessage("DeleteIsOwnerOnly", "The shop can only be destroyed by the player owner!"))
                 return
             }

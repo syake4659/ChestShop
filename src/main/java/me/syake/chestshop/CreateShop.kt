@@ -37,6 +37,7 @@ class CreateShop(private val main: ChestShop): Listener {
                     return
                 }
             }
+            main.datas.config().set("revenue", main.datas.config().getInt("revenue") + 200)
             val itemAmount = blockState.getLine(1).toIntOrNull().run {
                 if(this!=null) {
                     if(this<1) {

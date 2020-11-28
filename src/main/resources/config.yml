@@ -1,4 +1,4 @@
-# vanilla: When set to emerald, the currency is set to emerald.
+# vanilla: When set to vanilla, the currency is set to vanilla.
 # economy: When set to economy, it will be synchronized with the economy plugin. Vault is required.
 mode: "vanilla"
 

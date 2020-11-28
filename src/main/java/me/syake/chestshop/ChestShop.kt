@@ -7,6 +7,7 @@ import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Item
+import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
@@ -16,6 +17,7 @@ class ChestShop : JavaPlugin(), Listener {
 
     val lang = Config(this, "languages.yml")
     val shops = Config(this, "shops.yml")
+    val datas = Config(this, "datas.yml")
     var econ: Economy? = null
     var economy = false
     private val shopProtect = ShopProtect(this)
@@ -31,6 +33,7 @@ class ChestShop : JavaPlugin(), Listener {
         saveDefaultConfig()
         lang.saveDefaultConfig()
         shops.saveDefaultConfig()
+        datas.saveDefaultConfig()
         Bukkit.getPluginManager().registerEvents(interactEvent, this)
         Bukkit.getPluginManager().registerEvents(shopProtect, this)
         Bukkit.getPluginManager().registerEvents(deleteShop, this)
@@ -75,12 +78,14 @@ class ChestShop : JavaPlugin(), Listener {
             }
             when(args[0]) {
                 "reload" -> {
-                    lang.saveConfig()
-                    saveConfig()
-                    shops.saveConfig()
+                    if(sender.hasPermission("chestshop.reload")) {
+                        return true
+                    }
+                    sender.sendMessage(lang.toMessage("reloadDone", "&6Reload is complete."))
                     lang.reloadConfig()
                     shops.reloadConfig()
                     reloadConfig()
+                    datas.reloadConfig()
                     if(config.getString("mode")=="economy") {
                         if(setupEconomy()) {
                             economy = true
@@ -97,6 +102,42 @@ class ChestShop : JavaPlugin(), Listener {
                         }
                     }
                 }
+                "revenue" -> {
+                    if(args.size == 1) {
+                        sender.sendMessage(lang.toMessage("currentRevenue", "Current tax revenue: &a%revenue%").replace("%revenue%", datas.config().getInt("revenue").toString()))
+                        return true
+                    } else if(args.size==2) {
+                        when(args[1]) {
+                            "view" -> {
+                                if(sender.hasPermission("chestshop.revenue.view")) {
+                                    sender.sendMessage(lang.toMessage("hasNotPermission", "You do not have permission to execute this command."))
+                                    return true
+                                }
+                                sender.sendMessage(lang.toMessage("currentRevenue", "Current tax revenue: &a%revenue%").replace("%revenue%", datas.config().getInt("revenue").toString()))
+                                return true
+                            }
+                            "get" -> {
+                                if(sender.hasPermission("chestshop.revenue.get")) {
+                                    sender.sendMessage(lang.toMessage("hasNotPermission", "You do not have permission to execute this command."))
+                                    return true
+                                }
+                                if(sender !is Player) {
+                                    sender.sendMessage(lang.toMessage("commandPlayerOnly", "This command can only be executed by the player."))
+                                    return true
+                                }
+                                if(economy) {
+                                    econ!!.depositPlayer(Bukkit.getOfflinePlayer(sender.uniqueId), datas.config().getInt("revenue").toDouble())
+                                } else {
+                                    shopSystem.dropItem(sender, currency, datas.config().getInt("revenue"))
+                                }
+                                datas.config().set("revenue", 0)
+                                datas.saveConfig()
+                                sender.sendMessage(lang.toMessage("passTax", "Pass all tax revenue to &a%player%&f.").replace("%player%", sender.name))
+                                return true
+                            }
+                        }
+                    }
+                }
                 else -> sender.sendMessage(lang.toMessage("help", "&6/chestshop reload&8: &7Reload the config file.", false))
             }
         }
@@ -104,15 +145,27 @@ class ChestShop : JavaPlugin(), Listener {
     }
 
     override fun onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array<out String>): MutableList<String> {
-        val commands = mutableListOf("reload")
+        val commands = mutableListOf("reload", "revenue")
+        val revenue = mutableListOf("get", "view")
         if(command.name == "chestshop") {
-            if(args.isEmpty())  {
-                return commands
-            }
             if(args.size==1) {
+                if(args[0]=="") {
+                    return commands
+                }
                 val cmds = mutableListOf<String>()
                 for(cmd in commands) {
-                    if(args[0].startsWith(cmd)) {
+                    if(cmd.startsWith(args[0])) {
+                        cmds.add(cmd)
+                    }
+                }
+                return cmds
+            } else if(args.size == 2) {
+                if(args[1]=="") {
+                    return revenue
+                }
+                val cmds = mutableListOf<String>()
+                for(cmd in revenue) {
+                    if(cmd.startsWith(args[1])) {
                         cmds.add(cmd)
                     }
                 }
