@@ -29,7 +29,6 @@ class ChestShop : JavaPlugin(), Listener {
     private val deleteShop = DeleteShop(this)
 
     override fun onEnable() {
-        Metrics(this, 9440)
         saveDefaultConfig()
         lang.saveDefaultConfig()
         shops.saveDefaultConfig()
